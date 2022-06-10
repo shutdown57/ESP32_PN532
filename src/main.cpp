@@ -16,12 +16,20 @@ Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);
 void setup(void)
 {
     Serial.begin(115200);
+    
     nfc.begin();
+
+    uint32_t versiondata = nfc.getFirmwareVersion();
+    // if (! versiondata) {
+    //     Serial.print("Didn't find PN53x board");
+    //     while (1); // halt
+    // }
+    // Serial.println(versiondata);
 
     // configure board to read RFID tags
     nfc.SAMConfig();
 
-    Serial.println(NDEF_URIPREFIX_DAV);
+    // Serial.println(NDEF_URIPREFIX_DAV);
     Serial.println("Waiting for an ISO14443A Card ...");
 }
 
@@ -30,6 +38,7 @@ void loop(void)
     uint8_t success;
     uint8_t uid[] = {0, 0, 0, 0, 0, 0, 0}; // Buffer to store the returned UID
     uint8_t uidLength;                     // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+
 
     // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
     // 'uid' will be populated with the UID, and uidLength will indicate
@@ -45,8 +54,6 @@ void loop(void)
         Serial.println(" bytes");
         Serial.print("  UID Value: ");
         nfc.PrintHex(uid, uidLength);
-
-        Serial.println("OK");
 
         if (uidLength == 4)
         {
